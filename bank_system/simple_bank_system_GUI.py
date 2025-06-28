@@ -50,4 +50,28 @@ class SBSGUI:
         self.manager_frame = tk.Frame(self.container, bg="blue")
         self.manager_frame.grid(row=0, column=0, sticky="nsew") 
 
-        
+    def setup_login_ui(self):
+        header = tk.Frame(self.login_frame, bg="blue")
+        header.place(x=20, y=20)
+        tk.Label(header, text="SBS", font=("Arial", 40, "bold"), fg="white", bg="blue").pack(anchor="w")
+        tk.Label(header, text="Simple Bank System", font=("Arial", 16), fg="white", bg="blue").pack(anchor="w")
+
+        login_form = tk.Frame(self.login_frame, bg="blue")
+        login_form.place(relx=0.5, rely=0.5, anchor="center")
+
+        self.role_label = tk.Label(login_form, text="Customer Login", font=("Arial", 20, "bold"), bg="blue", fg="white")
+        self.role_label.pack(pady=(0, 10))
+
+        self.user_label = tk.Label(login_form, text="Account number", bg="blue", fg="white", font=("Arial", 14))
+        self.user_label.pack()
+        self.entry_user = tk.Entry(login_form, font=("Arial", 14), width=25, bg="white", fg="black")
+        self.entry_user.pack(pady=(0, 10))
+
+        self.pin_label = tk.Label(login_form, text="PIN", bg="blue", fg="white", font=("Arial", 14))
+        self.pin_label.pack()
+        self.entry_pin = tk.Entry(login_form, font=("Arial", 14), show="*", width=25, bg="white", fg="black")
+        self.entry_pin.pack(pady=(0, 20))
+
+        tk.Button(login_form, text="Login", font=("Arial", 14), width=20,
+                bg="white", fg="blue", command=self.handle_login).pack()
+        self.login_frame.bind_all("<F12>", self.toggle_role)
