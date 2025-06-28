@@ -36,9 +36,12 @@ class SBSGUI:
     def setup_frames(self):
         self.splash_frame = tk.Frame(self.container, bg="blue")
         self.splash_frame.grid(row=0, column=0, sticky="nsew")
-        tk.Label(self.splash_frame, text="SBS", font=("Arial", 48, "bold"), fg="white", bg="blue").pack(pady=(180, 10))
-        tk.Label(self.splash_frame, text="Simple Bank System", font=("Arial", 20), fg="white", bg="blue").pack()
-        self.loading_label = tk.Label(self.splash_frame, text="", font=("Arial", 40), fg="white", bg="blue")
+        # Center SBS and subtitle in splash frame
+        splash_center = tk.Frame(self.splash_frame, bg="blue")
+        splash_center.pack(expand=True)
+        tk.Label(splash_center, text="SBS", font=("Arial", 48, "bold"), fg="white", bg="blue").pack(pady=(0, 10))
+        tk.Label(splash_center, text="Simple Bank System", font=("Arial", 20), fg="white", bg="blue").pack()
+        self.loading_label = tk.Label(splash_center, text="", font=("Arial", 40), fg="white", bg="blue")
         self.loading_label.pack()
 
         self.login_frame = tk.Frame(self.container, bg="blue")
@@ -51,12 +54,14 @@ class SBSGUI:
         self.manager_frame = tk.Frame(self.container, bg="blue")
         self.manager_frame.grid(row=0, column=0, sticky="nsew") 
 
-    def setup_login_ui(self):
-        header = tk.Frame(self.login_frame, bg="blue")
-        header.place(x=20, y=20)
+    def add_header(self, frame):
+        header = tk.Frame(frame, bg="blue")
+        header.pack(anchor="nw", padx=20, pady=20)
         tk.Label(header, text="SBS", font=("Arial", 40, "bold"), fg="white", bg="blue").pack(anchor="w")
         tk.Label(header, text="Simple Bank System", font=("Arial", 16), fg="white", bg="blue").pack(anchor="w")
 
+    def setup_login_ui(self):
+        self.add_header(self.login_frame)
         login_form = tk.Frame(self.login_frame, bg="blue")
         login_form.place(relx=0.5, rely=0.5, anchor="center")
 
@@ -122,23 +127,38 @@ class SBSGUI:
 
     def show_customer_dashboard(self):
         self.clear_frame(self.customer_frame)
-        tk.Label(self.customer_frame, text=f"Welcome, {self.current_account._account_holder}",
-                 font=("Arial", 24), fg="white", bg="blue").pack(pady=10)
-        tk.Label(self.customer_frame, text=f"Balance: P{self.current_account.get_balance():.2f}",
-                 font=("Arial", 16), fg="white", bg="blue").pack(pady=10)
+        self.add_header(self.customer_frame)
 
-        amount_entry = tk.Entry(self.customer_frame, font=("Arial", 14))
-        amount_entry.pack(pady=10)
+        info_frame = tk.Frame(self.customer_frame, bg="blue")
+        info_frame.pack(pady=20)
 
-        tk.Button(self.customer_frame, text="Deposit", font=("Arial", 14), command=lambda: self.deposit_amount(amount_entry)).pack()
-        tk.Button(self.customer_frame, text="Withdraw", font=("Arial", 14), command=lambda: self.withdraw_amount(amount_entry)).pack()
-        tk.Button(self.customer_frame, text="View Transactions", font=("Arial", 14),
-          command=self.show_transactions).pack()
-        tk.Button(self.customer_frame, text="Logout", font=("Arial", 14), command=lambda: self.show(self.login_frame)).pack(pady=20)
+        tk.Label(info_frame, text=f"Account Number: {self.current_account._account_number}",
+                 font=("Arial", 16), fg="white", bg="blue", anchor="w").pack(anchor="w")
+        tk.Label(info_frame, text=f"Account Holder: {self.current_account._account_holder}",
+                 font=("Arial", 16), fg="white", bg="blue", anchor="w").pack(anchor="w")
+        tk.Label(info_frame, text=f"Balance: P{self.current_account.get_balance():.2f}",
+                 font=("Arial", 16, "bold"), fg="white", bg="blue", anchor="w").pack(anchor="w", pady=(0, 10))
+
+        action_frame = tk.Frame(self.customer_frame, bg="blue")
+        action_frame.pack(pady=10)
+
+        amount_entry = tk.Entry(action_frame, font=("Arial", 14))
+        amount_entry.pack(pady=(0, 10))
+
+        tk.Button(action_frame, text="Deposit", font=("Arial", 14), width=20,
+                  command=lambda: self.deposit_amount(amount_entry)).pack(pady=2)
+        tk.Button(action_frame, text="Withdraw", font=("Arial", 14), width=20,
+                  command=lambda: self.withdraw_amount(amount_entry)).pack(pady=2)
+        tk.Button(action_frame, text="View Transactions", font=("Arial", 14), width=20,
+                  command=self.show_transactions).pack(pady=2)
+        tk.Button(self.customer_frame, text="Logout", font=("Arial", 14), width=20,
+                  command=lambda: self.show(self.login_frame)).pack(pady=20)
+
         self.show(self.customer_frame)
 
     def show_manager_dashboard(self):
         self.clear_frame(self.manager_frame)
+        self.add_header(self.manager_frame)
         total_users = self.bank.get_total_users()
         total_balance = self.bank.get_total_balance()
         tk.Label(self.manager_frame, text=f"Total Users: {total_users}", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
@@ -149,6 +169,7 @@ class SBSGUI:
 
     def create_user_ui(self):
         self.clear_frame(self.manager_frame)
+        self.add_header(self.manager_frame)
         tk.Label(self.manager_frame, text="Create New Customer", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
         entry_name = tk.Entry(self.manager_frame, font=("Arial", 14))
         entry_name.pack(pady=10)
@@ -166,8 +187,12 @@ class SBSGUI:
         tk.Button(self.manager_frame, text="Back", font=("Arial", 14), command=self.show_manager_dashboard).pack(pady=20)
 
     def deposit_amount(self, entry):
+        amount_str = entry.get().strip()
+        if not amount_str:
+            messagebox.showwarning("Input Error", "Input deposit amount.")
+            return
         try:
-            amount = float(entry.get())
+            amount = float(amount_str)
             self.current_account.deposit(amount)
             self.bank.save_data()
             messagebox.showinfo("Success", "Amount deposited.")
@@ -176,8 +201,12 @@ class SBSGUI:
             messagebox.showerror("Error", str(e))
 
     def withdraw_amount(self, entry):
+        amount_str = entry.get().strip()
+        if not amount_str:
+            messagebox.showwarning("Input Error", "Input withdraw amount.")
+            return
         try:
-            amount = float(entry.get())
+            amount = float(amount_str)
             self.current_account.withdraw(amount)
             self.bank.save_data()
             messagebox.showinfo("Success", "Amount withdrawn.")
