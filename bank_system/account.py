@@ -7,3 +7,11 @@ class Account(ABC):
         self._pin = pin
         self._balance = balance
         self._transactions = []
+
+    @abstractmethod
+    def deposit(self, amount):
+        pass
+    
+    @abstractmethod
+    def withdraw(self, amount):
+       pass
