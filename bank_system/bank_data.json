@@ -25,5 +25,15 @@
         "pin": "0000",
         "role": "Manager",
         "transactions": []
+    },
+    "112592": {
+        "account_holder": "James Starwin Canoy",
+        "pin": "8187",
+        "role": "Customer",
+        "balance": 9843400.0,
+        "transactions": [
+            "Deposited: P10343400.00",
+            "Withdrew: P500000.00"
+        ]
     }
 }

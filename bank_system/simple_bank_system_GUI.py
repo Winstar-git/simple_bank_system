@@ -159,32 +159,48 @@ class SBSGUI:
     def show_manager_dashboard(self):
         self.clear_frame(self.manager_frame)
         self.add_header(self.manager_frame)
-        total_users = self.bank.get_total_users()
-        total_balance = self.bank.get_total_balance()
-        tk.Label(self.manager_frame, text=f"Total Users: {total_users}", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
-        tk.Label(self.manager_frame, text=f"Total Holdings: P{total_balance:.2f}", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
-        tk.Button(self.manager_frame, text="Logout", font=("Arial", 14), command=lambda: self.show(self.login_frame)).pack(pady=20)
+
+        info_frame = tk.Frame(self.manager_frame, bg="blue")
+        info_frame.pack(pady=20)
+
+        tk.Label(info_frame, text=f"Total Users: {self.bank.get_total_users()}",
+                 font=("Arial", 16), fg="white", bg="blue", anchor="w").pack(anchor="w")
+        tk.Label(info_frame, text=f"Total Holdings: P{self.bank.get_total_balance():.2f}",
+                 font=("Arial", 16, "bold"), fg="white", bg="blue", anchor="w").pack(anchor="w", pady=(0, 10))
+
+        action_frame = tk.Frame(self.manager_frame, bg="blue")
+        action_frame.pack(pady=10)
+
+        tk.Button(action_frame, text="Create Customer", font=("Arial", 14), width=25,
+                  command=self.create_user_ui).pack(pady=5)
+        tk.Button(action_frame, text="Logout", font=("Arial", 14), width=25,
+                  command=lambda: self.show(self.login_frame)).pack(pady=5)
+
         self.show(self.manager_frame)
-        tk.Button(self.manager_frame, text="Create Customer", font=("Arial", 14), command=self.create_user_ui).pack()
 
     def create_user_ui(self):
         self.clear_frame(self.manager_frame)
         self.add_header(self.manager_frame)
-        tk.Label(self.manager_frame, text="Create New Customer", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
-        entry_name = tk.Entry(self.manager_frame, font=("Arial", 14))
+
+        form_frame = tk.Frame(self.manager_frame, bg="blue")
+        form_frame.pack(pady=30)
+
+        tk.Label(form_frame, text="Create New Customer", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
+        tk.Label(form_frame, text="Account Holder Name:", font=("Arial", 14), fg="white", bg="blue").pack()
+        entry_name = tk.Entry(form_frame, font=("Arial", 14))
         entry_name.pack(pady=10)
 
-    def create(self):
-        name = self.entry_name.get()
-        if not name:
-            messagebox.showwarning("Input Error", "Enter a name.")
-            return
-        result = self.current_account.create_account(name, self.bank)
-        messagebox.showinfo("Account Created", f"Account Number: {result['account_number']}\nPIN: {result['pin']}")
-        self.show_manager_dashboard()
+        def do_create():
+            name = entry_name.get().strip()
+            if not name:
+                messagebox.showwarning("Input Error", "Enter a name.")
+                return
+            result = self.current_account.create_account(name, self.bank)
+            messagebox.showinfo("Account Created", f"Account Number: {result['account_number']}\nPIN: {result['pin']}")
+            self.show_manager_dashboard()
 
-        tk.Button(self.manager_frame, text="Create Account", font=("Arial", 14), command=create()).pack(pady=5)
-        tk.Button(self.manager_frame, text="Back", font=("Arial", 14), command=self.show_manager_dashboard).pack(pady=20)
+        tk.Button(form_frame, text="Create Account", font=("Arial", 14), width=25, command=do_create).pack(pady=5)
+        tk.Button(form_frame, text="Back", font=("Arial", 14), width=25, command=self.show_manager_dashboard).pack(pady=5)
 
     def deposit_amount(self, entry):
         amount_str = entry.get().strip()
