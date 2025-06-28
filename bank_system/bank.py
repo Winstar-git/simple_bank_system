@@ -1,8 +1,9 @@
 import json
 import os
 from savings_account import SavingsAccount
+from account import Account
 
-class Bank:
+class Bank(Account):
     def __init__(self):
         self.accounts = {}
         self.load_data()
