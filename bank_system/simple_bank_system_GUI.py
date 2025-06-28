@@ -75,3 +75,14 @@ class SBSGUI:
         tk.Button(login_form, text="Login", font=("Arial", 14), width=20,
                 bg="white", fg="blue", command=self.handle_login).pack()
         self.login_frame.bind_all("<F12>", self.toggle_role)
+
+    def show(self, frame):
+        frame.tkraise()
+
+    def start_splash(self):
+        symbols = ["◐", "◓", "◑", "◒"]
+        def animate(index=0):
+            self.loading_label.config(text=symbols[index % len(symbols)])
+            self.root.after(200, animate, index + 1)
+        animate()
+        self.root.after(2000, lambda: self.show(self.login_frame))
