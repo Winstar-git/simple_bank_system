@@ -98,3 +98,17 @@ class SBSGUI:
             self.role_label.config(text="Customer Login")
             self.user_label.config(text="Account number")
             self.pin_label.config(text="PIN")
+
+        def handle_login(self):
+            acc_no = self.entry_user.get()
+            pin = self.entry_pin.get()
+            account = self.bank.get_account(acc_no, pin)
+
+            if account:
+                self.current_account = account
+                if hasattr(account, "get_balance"):
+                    self.show_customer_dashboard()
+                else:
+                    self.show_manager_dashboard()
+            else:
+                messagebox.showerror("Login Failed", "Invalid credentials.")
