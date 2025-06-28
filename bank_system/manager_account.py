@@ -8,10 +8,10 @@ class ManagerAccount(Account):
         self._role = "Manager"
 
     def deposit(self, amount):
-        pass 
+        pass
 
     def withdraw(self, amount):
-        pass 
+        pass
 
     def verify_pin(self, input_pin):
         return self._pin == input_pin
@@ -28,6 +28,6 @@ class ManagerAccount(Account):
         new_customer = SavingsAccount(acc_number, name, pin)
         bank.add_account(new_customer)
         return {
-            "account_number" : acc_number,
-            "pin" : pin
+            "account_number": acc_number,
+            "pin": pin
         }

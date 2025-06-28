@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from bank import Bank
+import bank
 from manager_account import ManagerAccount
 from savings_account import SavingsAccount
 
@@ -88,7 +89,7 @@ class SBSGUI:
         self.root.after(2000, lambda: self.show(self.login_frame))
 
     def toggle_role(self, event=None):
-        if self.current_role == "customer":
+        if self.current_role.lower() == "customer":
             self.current_role = "manager"
             self.role_label.config(text="🛠 Manager Login")
             self.user_label.config(text="User")
@@ -100,18 +101,21 @@ class SBSGUI:
             self.pin_label.config(text="PIN")
 
     def handle_login(self):
-            acc_no = self.entry_user.get()
-            pin = self.entry_pin.get()
-            account = self.bank.get_account(acc_no, pin)
+        acc_no = self.entry_user.get().strip()
+        pin = self.entry_pin.get().strip()
+        print(f"Trying login with: {acc_no} / {pin}")
+        account = self.bank.get_account(acc_no, pin)
 
-            if account:
-                self.current_account = account
-                if hasattr(account, "get_balance"):
-                    self.show_customer_dashboard()
-                else:
-                    self.show_manager_dashboard()
+        if account:
+            print("Login successful!")
+            self.current_account = account
+            if hasattr(account, "get_balance"):
+                self.show_customer_dashboard()
             else:
-                messagebox.showerror("Login Failed", "Invalid credentials.")
+                self.show_manager_dashboard()
+        else:
+            print("Login failed.")
+            messagebox.showerror("Login Failed", "Invalid credentials.")
 
     def show_customer_dashboard(self):
         self.clear_frame(self.customer_frame)
@@ -125,6 +129,8 @@ class SBSGUI:
 
         tk.Button(self.customer_frame, text="Deposit", font=("Arial", 14), command=lambda: self.deposit_amount(amount_entry)).pack()
         tk.Button(self.customer_frame, text="Withdraw", font=("Arial", 14), command=lambda: self.withdraw_amount(amount_entry)).pack()
+        tk.Button(self.customer_frame, text="View Transactions", font=("Arial", 14),
+          command=self.show_transactions).pack()
         tk.Button(self.customer_frame, text="Logout", font=("Arial", 14), command=lambda: self.show(self.login_frame)).pack(pady=20)
         self.show(self.customer_frame)
 
@@ -136,6 +142,27 @@ class SBSGUI:
         tk.Label(self.manager_frame, text=f"Total Holdings: P{total_balance:.2f}", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
         tk.Button(self.manager_frame, text="Logout", font=("Arial", 14), command=lambda: self.show(self.login_frame)).pack(pady=20)
         self.show(self.manager_frame)
+        tk.Button(self.manager_frame, text="Create Customer", font=("Arial", 14), command=self.create_user_ui).pack()
+
+    def create_user_ui(self):
+        self.clear_frame(self.manager_frame)
+
+        tk.Label(self.manager_frame, text="Create New Customer", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
+        
+        entry_name = tk.Entry(self.manager_frame, font=("Arial", 14))
+        entry_name.pack(pady=10)
+
+        def create():
+            name = entry_name.get()
+            if not name:
+                messagebox.showwarning("Input Error", "Enter a name.")
+                return
+            result = self.current_account.create_account(name, self.bank)
+            messagebox.showinfo("Account Created", f"Account Number: {result['account_number']}\nPIN: {result['pin']}")
+            self.show_manager_dashboard()
+
+        tk.Button(self.manager_frame, text="Create Account", font=("Arial", 14), command=create).pack(pady=5)
+        tk.Button(self.manager_frame, text="Back", font=("Arial", 14), command=self.show_manager_dashboard).pack(pady=20)
 
     def deposit_amount(self, entry):
         try:
@@ -156,11 +183,19 @@ class SBSGUI:
             self.show_customer_dashboard()
         except Exception as e:
             messagebox.showerror("Error", str(e))
+    
+    def show_transactions(self):
+        history = self.current_account.get_transactions()
+        if not history:
+            messagebox.showinfo("Transactions", "No transactions yet.")
+            return
+        history_text = "\n".join(history)
+        messagebox.showinfo("Transaction History", history_text)
+
 
     def clear_frame(self, frame):
         for widget in frame.winfo_children():
             widget.destroy()
-
 
 if __name__ == "__main__":
     root = tk.Tk()
