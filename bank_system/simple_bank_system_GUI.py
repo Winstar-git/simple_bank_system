@@ -99,7 +99,7 @@ class SBSGUI:
             self.user_label.config(text="Account number")
             self.pin_label.config(text="PIN")
 
-        def handle_login(self):
+    def handle_login(self):
             acc_no = self.entry_user.get()
             pin = self.entry_pin.get()
             account = self.bank.get_account(acc_no, pin)
@@ -112,3 +112,8 @@ class SBSGUI:
                     self.show_manager_dashboard()
             else:
                 messagebox.showerror("Login Failed", "Invalid credentials.")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = SBSGUI(root)
+    root.mainloop()
