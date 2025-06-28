@@ -86,3 +86,15 @@ class SBSGUI:
             self.root.after(200, animate, index + 1)
         animate()
         self.root.after(2000, lambda: self.show(self.login_frame))
+
+    def toggle_role(self, event=None):
+        if self.current_role == "customer":
+            self.current_role = "manager"
+            self.role_label.config(text="🛠 Manager Login")
+            self.user_label.config(text="User")
+            self.pin_label.config(text="Password")
+        else:
+            self.current_role = "customer"
+            self.role_label.config(text="Customer Login")
+            self.user_label.config(text="Account number")
+            self.pin_label.config(text="PIN")
