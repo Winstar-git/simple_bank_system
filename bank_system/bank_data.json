@@ -1,0 +1,29 @@
+{
+    "100001": {
+        "account_holder": "Alice Dela Cruz",
+        "pin": "1111",
+        "role": "Customer",
+        "balance": 1501.0,
+        "transactions": [
+            "Deposited: P1000.00",
+            "Deposited: P500.00",
+            "Deposited: P1.00"
+        ]
+    },
+    "100002": {
+        "account_holder": "Bob Santos",
+        "pin": "2222",
+        "role": "Customer",
+        "balance": 750.0,
+        "transactions": [
+            "Deposited: P1000.00",
+            "Withdrew: P250.00"
+        ]
+    },
+    "999999": {
+        "account_holder": "Manager Juan",
+        "pin": "0000",
+        "role": "Manager",
+        "transactions": []
+    }
+}

@@ -103,6 +103,9 @@ class SBSGUI:
     def handle_login(self):
         acc_no = self.entry_user.get().strip()
         pin = self.entry_pin.get().strip()
+        if not acc_no.isdigit() or not pin.isdigit():
+            messagebox.showerror("Login Failed", "Account number and PIN must be numbers.")
+            return
         print(f"Trying login with: {acc_no} / {pin}")
         account = self.bank.get_account(acc_no, pin)
 
@@ -146,22 +149,20 @@ class SBSGUI:
 
     def create_user_ui(self):
         self.clear_frame(self.manager_frame)
-
         tk.Label(self.manager_frame, text="Create New Customer", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
-        
         entry_name = tk.Entry(self.manager_frame, font=("Arial", 14))
         entry_name.pack(pady=10)
 
-        def create():
-            name = entry_name.get()
-            if not name:
-                messagebox.showwarning("Input Error", "Enter a name.")
-                return
-            result = self.current_account.create_account(name, self.bank)
-            messagebox.showinfo("Account Created", f"Account Number: {result['account_number']}\nPIN: {result['pin']}")
-            self.show_manager_dashboard()
+    def create(self):
+        name = self.entry_name.get()
+        if not name:
+            messagebox.showwarning("Input Error", "Enter a name.")
+            return
+        result = self.current_account.create_account(name, self.bank)
+        messagebox.showinfo("Account Created", f"Account Number: {result['account_number']}\nPIN: {result['pin']}")
+        self.show_manager_dashboard()
 
-        tk.Button(self.manager_frame, text="Create Account", font=("Arial", 14), command=create).pack(pady=5)
+        tk.Button(self.manager_frame, text="Create Account", font=("Arial", 14), command=create()).pack(pady=5)
         tk.Button(self.manager_frame, text="Back", font=("Arial", 14), command=self.show_manager_dashboard).pack(pady=20)
 
     def deposit_amount(self, entry):

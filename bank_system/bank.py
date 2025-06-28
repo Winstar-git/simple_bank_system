@@ -9,7 +9,14 @@ class Bank:
         self.load_data()
 
     def load_data(self):
+        print(">>> load_data() called")
+
         file_path = os.path.join(os.path.dirname(__file__), "bank_data.json")
+        if not os.path.exists(file_path):
+            file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "bank_data.json")
+        print(f">>> Looking for JSON at: {file_path}")
+        print(f">>> File exists: {os.path.exists(file_path)}")
+
         if os.path.exists(file_path):
             with open(file_path, "r") as file:
                 try:
@@ -33,6 +40,7 @@ class Bank:
                         acc._transactions = details.get("transactions", [])
                 except json.JSONDecodeError:
                     print("JSON file is empty or invalid. Starting fresh.")
+        print(f"Total accounts loaded: {len(self.accounts)}")
 
     def save_data(self):
         data = {}
@@ -56,10 +64,17 @@ class Bank:
         self.save_data()
 
     def get_account(self, acc_no, pin):
-        acc = self.accounts.get(acc_no)
+        print(f"get_account() → acc_no={acc_no}, pin={pin}")
+        acc = self.accounts.get(str(acc_no))  # Ensure acc_no is a string
         if acc:
-            if acc.verify_pin(pin):
+            print(f"Found account: {acc._account_holder}")
+            if acc.verify_pin(str(pin)):  # Also ensure pin is a string
+                print("PIN verified")
                 return acc
+            else:
+                print("Wrong PIN")
+        else:
+            print("Account number not found in memory.")
         return None
 
     def get_total_balance(self):
