@@ -113,6 +113,55 @@ class SBSGUI:
             else:
                 messagebox.showerror("Login Failed", "Invalid credentials.")
 
+    def show_customer_dashboard(self):
+        self.clear_frame(self.customer_frame)
+        tk.Label(self.customer_frame, text=f"Welcome, {self.current_account._account_holder}",
+                 font=("Arial", 24), fg="white", bg="blue").pack(pady=10)
+        tk.Label(self.customer_frame, text=f"Balance: P{self.current_account.get_balance():.2f}",
+                 font=("Arial", 16), fg="white", bg="blue").pack(pady=10)
+
+        amount_entry = tk.Entry(self.customer_frame, font=("Arial", 14))
+        amount_entry.pack(pady=10)
+
+        tk.Button(self.customer_frame, text="Deposit", font=("Arial", 14), command=lambda: self.deposit_amount(amount_entry)).pack()
+        tk.Button(self.customer_frame, text="Withdraw", font=("Arial", 14), command=lambda: self.withdraw_amount(amount_entry)).pack()
+        tk.Button(self.customer_frame, text="Logout", font=("Arial", 14), command=lambda: self.show(self.login_frame)).pack(pady=20)
+        self.show(self.customer_frame)
+
+    def show_manager_dashboard(self):
+        self.clear_frame(self.manager_frame)
+        total_users = self.bank.get_total_users()
+        total_balance = self.bank.get_total_balance()
+        tk.Label(self.manager_frame, text=f"Total Users: {total_users}", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
+        tk.Label(self.manager_frame, text=f"Total Holdings: P{total_balance:.2f}", font=("Arial", 20), fg="white", bg="blue").pack(pady=10)
+        tk.Button(self.manager_frame, text="Logout", font=("Arial", 14), command=lambda: self.show(self.login_frame)).pack(pady=20)
+        self.show(self.manager_frame)
+
+    def deposit_amount(self, entry):
+        try:
+            amount = float(entry.get())
+            self.current_account.deposit(amount)
+            self.bank.save_data()
+            messagebox.showinfo("Success", "Amount deposited.")
+            self.show_customer_dashboard()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def withdraw_amount(self, entry):
+        try:
+            amount = float(entry.get())
+            self.current_account.withdraw(amount)
+            self.bank.save_data()
+            messagebox.showinfo("Success", "Amount withdrawn.")
+            self.show_customer_dashboard()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def clear_frame(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
+
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = SBSGUI(root)
