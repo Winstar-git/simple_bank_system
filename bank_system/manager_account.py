@@ -1,4 +1,6 @@
 from account import Account
+from savings_account import SavingsAccount
+import random
 
 class ManagerAccount(Account):
     def __init__(self, account_number, account_holder, pin):
@@ -15,4 +17,13 @@ class ManagerAccount(Account):
             "Account Number": self._account_number,
             "Account Holder": self._account_holder,
             "Balance" : self._balance
+        }
+    
+    def create_acc(self,name,):
+        acc_number = str(random.randint(1000000, 999999))
+        pin = str(random.randint(1000, 9999))
+        new_customer = SavingsAccount(acc_number, name, pin)
+        return {
+            "account_number" : acc_number,
+            "pin" : pin
         }
